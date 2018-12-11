@@ -1,4 +1,4 @@
-.PHONY: app clean
+.PHONY: app clean client server
 
 all: app
 
@@ -13,7 +13,12 @@ app:
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/system_api.o system_api.c
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/unix_network.o unix_network.c
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/windows_network.o windows_network.c
-	g++ -o Build/client Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+
+client:
+	gcc -o Build/client Build/client.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+
+server:
+	gcc -o Build/server Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
 
 clean:
 	@echo "Cleaning up..."
@@ -28,7 +33,7 @@ app:
 	cl.exe /c -o Build/system_api.o system_api.c
 	cl.exe /c -o Build/unix_network.o unix_network.c
 	cl.exe /c -o Build/windows_network.o windows_network.c
-	g++ -o Build/client Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+	cl.exe -o Build/client Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
 
 clean:
 	del Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o
