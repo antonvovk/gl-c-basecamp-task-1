@@ -13,11 +13,12 @@
 int main() {
     int sockfd;
     struct sockaddr_in servaddr;
-    createSocket(5548, 1, &sockfd, &servaddr);
-    int conffd = serverPart(&sockfd, &servaddr);
+    createSocket(5576, 1, &sockfd, &servaddr);
+    int conffd = serverPart(sockfd, servaddr);
 
-    char buff[200];
-    readDataFromClient(buff, &conffd);
+
+    callFuncPeriodically(2, readDataFromClient, 0, conffd);
+
     close(sockfd);
     return 0;
 }
