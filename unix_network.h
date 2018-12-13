@@ -6,11 +6,15 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <strings.h>
 
-int createSocket(int port, int type_server, int *sockfd, struct sockaddr_in *servaddr) ;
-int connectToServer(int sockfd, struct sockaddr_in servaddr);
-int serverPart(int sockfd, struct sockaddr_in servaddr);
-int sendDataToServer(char *data, int sockfd);
-int readDataFromClient(char *data, int sockfd);
+int createSocket(int *socket_id);
+int createSocketClient(int *socket_id, int port, char *address);
+int connectToServer(unsigned long long socket_id, struct sockaddr_in servaddr);
+int createSocketServer(int *socket_id, int port);
+int sendData(char *data, unsigned long long socket_id);
+int readData(char *data, unsigned long long socket_id);
 
 #endif

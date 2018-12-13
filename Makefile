@@ -1,28 +1,27 @@
 .PHONY: app clean client server
 
-all: app
+all: app client server
 
 PLATFORM := $(shell uname)
 
 ifeq ($(PLATFORM),Linux)
 	
 app:
-	mkdir Build
+	mkdir -p Build
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/client.o client.c
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/server.o server.c
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/system_api.o system_api.c
 	gcc -c -pipe -g -Wall -W -fPIC  -o Build/unix_network.o unix_network.c
-	gcc -c -pipe -g -Wall -W -fPIC  -o Build/windows_network.o windows_network.c
 
 client:
-	gcc -o Build/client Build/client.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+	gcc -o Build/client Build/client.o Build/system_api.o Build/unix_network.o
 
 server:
-	gcc -o Build/server Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+	gcc -o Build/server Build/server.o Build/system_api.o Build/unix_network.o
 
 clean:
 	@echo "Cleaning up..."
-	rm -f Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o
+	rm -f Build/client.o Build/server.o Build/system_api.o Build/unix_network.o
 
 else
 		
@@ -31,12 +30,11 @@ app:
 	cl.exe /c -o Build/client.o client.c
 	cl.exe /c -o Build/server.o server.c
 	cl.exe /c -o Build/system_api.o system_api.c
-	cl.exe /c -o Build/unix_network.o unix_network.c
 	cl.exe /c -o Build/windows_network.o windows_network.c
-	cl.exe -o Build/client Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o 
+	cl.exe -o Build/client Build/client.o Build/server.o Build/system_api.o Build/windows_network.o 
 
 clean:
-	del Build/client.o Build/server.o Build/system_api.o Build/unix_network.o Build/windows_network.o
+	del Build/client.o Build/server.o Build/system_api.o Build/windows_network.o
 endif
 
 

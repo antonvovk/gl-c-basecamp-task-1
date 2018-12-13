@@ -5,15 +5,10 @@
 #include "unix_network.h"
 
 int main() {
-    int sockfd;
-    struct sockaddr_in servaddr;
-    createSocket(5576, 1, &sockfd, &servaddr);
-    int conffd = serverPart(sockfd, servaddr);
-
-
-    callFuncPeriodically(2, readDataFromClient, 0, conffd);
-
-    close(sockfd);
+    int Socket;
+    createSocketServer(&Socket, 5577);
+    callFuncPeriodically(2, readData, 0, Socket);
+    close(Socket);
     return 0;
 }
 
