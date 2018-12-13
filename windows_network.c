@@ -13,14 +13,14 @@ int initialiseWinsock(void) {
     return 0;
 }
 
-int fillAddrInfo(struct addrinfo **result, struct addrinfo *hints, char *address, int server_type) {
+int fillAddrInfo(struct addrinfo **result, struct addrinfo *hints, char *address, int server_type, char *port) {
     int res;
 
     if (server_type == 0) {
-        res = getaddrinfo(address, DEFAULT_PORT, hints, result);
+        res = getaddrinfo(address, port, hints, result);
     }
     else {
-        res = getaddrinfo(NULL, DEFAULT_PORT, hints, result);
+        res = getaddrinfo(NULL, port, hints, result);
     }
 
     if (res != 0) {
@@ -35,8 +35,8 @@ int fillAddrInfo(struct addrinfo **result, struct addrinfo *hints, char *address
     return 0;
 }
 
-int createSocketClient(SOCKET *Socket) {
-    *Socket = INVALID_SOCKET;
+int createSocketClient(SOCKET *socket_id, char *port, char *address) {
+    *socket_id = INVALID_SOCKET;
     struct addrinfo *result = NULL, *ptr = NULL, hints;
     int res;
 
@@ -47,22 +47,22 @@ int createSocketClient(SOCKET *Socket) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    fillAddrInfo(&result, &hints, "127.0.0.1", 0);
+    fillAddrInfo(&result, &hints, address, 0, port);
 
     for(ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 
-        *Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-        if (*Socket == INVALID_SOCKET) {
+        *socket_id = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+        if (*socket_id == INVALID_SOCKET) {
             printf("[-] Socket failed with error: %d\n", WSAGetLastError());
             WSACleanup();
             return 1;
         }
 
-        res = connect(*Socket, ptr->ai_addr, (int)ptr->ai_addrlen);
+        res = connect(*socket_id, ptr->ai_addr, (int)ptr->ai_addrlen);
 
         if (res == SOCKET_ERROR) {
-            closesocket(*Socket);
-            *Socket = INVALID_SOCKET;
+            closesocket(*socket_id);
+            *socket_id = INVALID_SOCKET;
             continue;
         }
 
@@ -73,7 +73,7 @@ int createSocketClient(SOCKET *Socket) {
     return 0;
 }
 
-int createServerSocket(SOCKET *Socket) {
+int createSocketServer(SOCKET *socket_id, char *port) {
     int iResult;
     SOCKET ListenSocket = INVALID_SOCKET, ClientSocket = INVALID_SOCKET;
     struct addrinfo *result = NULL, hints;
@@ -86,7 +86,7 @@ int createServerSocket(SOCKET *Socket) {
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    fillAddrInfo(&result, &hints, NULL, 0);
+    fillAddrInfo(&result, &hints, NULL, 0, port);
 
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (ListenSocket == INVALID_SOCKET) {
@@ -136,13 +136,13 @@ int createServerSocket(SOCKET *Socket) {
     }
 
     closesocket(ListenSocket);
-    *Socket = ClientSocket;
+    *socket_id = ClientSocket;
 
     return 0;
 }
 
 int sendData(char *data, unsigned long long Socket) {
-    int iResult = send(Socket, data, (int)strlen(data), 0 );
+    int iResult = send(Socket, data, 20, 0 );
     if (iResult == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
             closesocket(Socket);
@@ -153,9 +153,8 @@ int sendData(char *data, unsigned long long Socket) {
 }
 
 int readData(char *data, unsigned long long Socket) {
-    char recvbuf[DEFAULT_BUFLEN];
-    int recvbuflen = DEFAULT_BUFLEN;
-    int iResult = recv(Socket, recvbuf, recvbuflen, 0);
+    char recvbuf[20];
+    int iResult = recv(Socket, recvbuf, 20, 0);
     if (iResult == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
             closesocket(Socket);

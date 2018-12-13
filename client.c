@@ -17,9 +17,9 @@ int main() {
 #include "windows_network.h"
 
 int main() {
-    SOCKET Socket;
-    createSocketClient(&Socket);
-    callFuncPeriodically(2, sendData, 1, Socket);
+    SOCKET socket_id;
+    createSocketClient(&socket_id, "5577", "127.0.0.1");
+    callFuncPeriodically(2, sendData, 1, socket_id);
     return 0;
 }
 

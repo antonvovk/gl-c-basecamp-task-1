@@ -5,10 +5,10 @@
 #include "unix_network.h"
 
 int main() {
-    int Socket;
-    createSocketServer(&Socket, 5577);
-    callFuncPeriodically(2, readData, 0, Socket);
-    close(Socket);
+    int socket_id;
+    createSocketServer(&socket_id, 5577);
+    callFuncPeriodically(2, readData, 0, socket_id);
+    close(socket_id);
     return 0;
 }
 
@@ -17,9 +17,9 @@ int main() {
 #include "windows_network.h"
 
 int main() {
-    SOCKET Socket;
-    createServerSocket(&Socket);
-    callFuncPeriodically(2, readData, 0, Socket);
+    SOCKET socket_id;
+    createSocketServer(&socket_id, "5577");
+    callFuncPeriodically(2, readData, 0, socket_id);
     return 0;
 }
 
