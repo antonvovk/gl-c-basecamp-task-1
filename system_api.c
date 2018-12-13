@@ -1,6 +1,6 @@
 #include "system_api.h"
 
-int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, int sockfd), int mouse_cords, int sockfd) {
+int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned long long sockfd), int mouse_cords, unsigned long long sockfd) {
     int x_prev, y_prev;
     char *data;
     char buffer[20];
@@ -36,12 +36,10 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, int sockf
 
         #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
 
-        Sleep(seconds);
+        Sleep(1000*seconds);
 
         #endif
     }
-
-    return 0;
 }
 
 int getMousePos(int *x, int *y) {
@@ -71,4 +69,6 @@ int getMousePos(int *x, int *y) {
     *y = point.y;
 
     #endif
+
+    return 0;
 }

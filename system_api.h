@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, int sockfd), int mouse_cords, int sockfd);
+int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned long long sockfd), int mouse_cords, unsigned long long sockfd);
 int getMousePos(int *x, int *y);
 
 #endif
