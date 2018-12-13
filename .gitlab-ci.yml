@@ -1,0 +1,3 @@
+before_script:
+    - apt-get install -y xdotool
+    - make all
