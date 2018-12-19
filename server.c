@@ -18,7 +18,11 @@ int main() {
 
 int main() {
     SOCKET socket_id;
-    createSocketServer(&socket_id, "5577");
+    char port[10] = {'\0'};
+    printf("Enter port: ");
+    scanf("%s", port);
+
+    createSocketServer(&socket_id, port);
     callFuncPeriodically(2, readData, 0, socket_id);
     return 0;
 }

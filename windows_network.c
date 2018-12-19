@@ -66,11 +66,15 @@ int createSocketClient(SOCKET *socket_id, char *port, char *address) {
             continue;
         }
 
-        break;
+        else {
+            printf("[+] Socket created successfully...\n");
+            printf("[+] Conected to server %s on port %s...\n", address, port);
+        }
+
+        return 0;
     }
 
-    printf("[+] Socket created successfully...\n");
-    return 0;
+    return -1;
 }
 
 int createSocketServer(SOCKET *socket_id, char *port) {
@@ -121,10 +125,13 @@ int createSocketServer(SOCKET *socket_id, char *port) {
         return -1;
     }
     else {
-        printf("[+] Started listening...\n");
+        printf("[+] Started listening on port %s...\n", port);
     }
 
-    ClientSocket = accept(ListenSocket, NULL, NULL);
+    SOCKADDR_IN client_ip;
+    int addrlen = sizeof(client_ip);
+    ClientSocket = accept(ListenSocket, (SOCKADDR*)&client_ip, &addrlen);
+
     if (ClientSocket == INVALID_SOCKET) {
         printf("[-]Accept failed with error: %d\n", WSAGetLastError());
         closesocket(ListenSocket);
@@ -132,7 +139,8 @@ int createSocketServer(SOCKET *socket_id, char *port) {
         return -1;
     }
     else {
-        printf("[+] Accept successfully...\n");
+        char *ip = inet_ntoa(client_ip.sin_addr);
+        printf("[+] Accepted Connection from: %s...\n", ip);
     }
 
     closesocket(ListenSocket);
@@ -142,7 +150,7 @@ int createSocketServer(SOCKET *socket_id, char *port) {
 }
 
 int sendData(char *data, unsigned long long Socket) {
-    int iResult = send(Socket, data, 20, 0 );
+    int iResult = send(Socket, data, 50, 0 );
     if (iResult == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
             closesocket(Socket);
@@ -153,16 +161,14 @@ int sendData(char *data, unsigned long long Socket) {
 }
 
 int readData(char *data, unsigned long long Socket) {
-    char recvbuf[20];
-    int iResult = recv(Socket, recvbuf, 20, 0);
+    int iResult = recv(Socket, data, 50, 0);
     if (iResult == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
             closesocket(Socket);
             WSACleanup();
             return 1;
         }
-    data = recvbuf;
-    printf("%s\n", recvbuf);
+    printf("%s\n", data);
     return 0;
 }
 

@@ -3,7 +3,7 @@
 int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned long long socket_id), unsigned mouse_cords, unsigned long long socket_id) {
     long x_prev, y_prev;
     char *data;
-    char buffer[20];
+    char buffer[50];
     getMousePos(&x_prev, &y_prev);
 
     while (1) {
@@ -12,10 +12,10 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned 
             getMousePos(&x, &y);
 
             if(x_prev == x && y_prev == y) {
-                data = "[-] Passive";
+                sprintf(data, "[-] Passive(X: %ld, Y: %ld)", x, y);
             }
             else {
-                data = "[+] Active";
+                sprintf(data, "[+] Active(X: %ld, Y: %ld)", x, y);
             }
 
             x_prev = x;

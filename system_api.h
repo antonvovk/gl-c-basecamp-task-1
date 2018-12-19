@@ -7,6 +7,8 @@
 
 #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
 
+#define WIN32_LEAN_AND_MEAN
+#pragma comment(lib, "user32.lib")
 #include <windows.h>
 
 #endif

@@ -18,7 +18,19 @@ int main() {
 
 int main() {
     SOCKET socket_id;
-    createSocketClient(&socket_id, "5577", "127.0.0.1");
+    char port[10] = {'\0'}, ip_address[20] = {'\0'};
+    printf("Enter server ip: ");
+    scanf("%s", ip_address);
+    printf("Enter server port: ");
+    scanf("%s", port);
+
+    if (createSocketClient(&socket_id, port, "127.0.0.1") == -1) {
+        printf("[-] Couldn't connect to server %s on port %s...", ip_address, port);
+        getchar();
+        getchar();
+        return -1;
+    }
+
     callFuncPeriodically(2, sendData, 1, socket_id);
     return 0;
 }
