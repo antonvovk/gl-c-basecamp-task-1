@@ -11,11 +11,10 @@
 #include <strings.h>
 
 int createSocket(int *socket_id);
-int createSocketClient(int *socket_id, char *port, char *address);
+int createSocketClient(int *socket_id, int port, char *address);
 int connectToServer(unsigned long long socket_id, struct sockaddr_in servaddr);
-int createSocketServer(unsigned long long *socket_id, char *port);
+int createSocketServer(int *socket_id, int port);
 int sendData(char *data, unsigned long long socket_id);
 int readData(char *data, unsigned long long socket_id);
-int closeSocket(unsigned long long socket_id);
 
 #endif

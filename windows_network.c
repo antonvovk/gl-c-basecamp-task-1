@@ -29,7 +29,7 @@ int fillAddrInfo(struct addrinfo **result, struct addrinfo *hints, char *address
         return -1;
     }
     else {
-        printf("[+] Getaddrinfo executed successfully...\n");
+        printf("[+] Getaddrinfo exucuted successfully...\n");
     }
 
     return 0;
@@ -66,19 +66,16 @@ int createSocketClient(SOCKET *socket_id, char *port, char *address) {
             continue;
         }
 
-        else {
-            printf("[+] Socket created successfully...\n");
-            printf("[+] Conected to server %s on port %s...\n", address, port);
-        }
-
-        return 0;
+        break;
     }
 
-    return -1;
+    printf("[+] Socket created successfully...\n");
+    return 0;
 }
 
 int createSocketServer(SOCKET *socket_id, char *port) {
-    SOCKET ListenSocket = INVALID_SOCKET;
+    int iResult;
+    SOCKET ListenSocket = INVALID_SOCKET, ClientSocket = INVALID_SOCKET;
     struct addrinfo *result = NULL, hints;
 
     initialiseWinsock();
@@ -102,10 +99,12 @@ int createSocketServer(SOCKET *socket_id, char *port) {
         printf("[+] Socket created successfully...\n");
     }
 
-    if (bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
+    iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+    if (iResult == SOCKET_ERROR) {
         printf("[-] Bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
-        closeSocket(ListenSocket);
+        closesocket(ListenSocket);
+        WSACleanup();
         return -1;
     }
     else {
@@ -114,56 +113,56 @@ int createSocketServer(SOCKET *socket_id, char *port) {
 
     freeaddrinfo(result);
 
-    if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR) {
+    iResult = listen(ListenSocket, SOMAXCONN);
+    if (iResult == SOCKET_ERROR) {
         printf("[-] Listen failed with error: %d\n", WSAGetLastError());
-        closeSocket(ListenSocket);
+        closesocket(ListenSocket);
+        WSACleanup();
         return -1;
     }
     else {
-        printf("[+] Started listening on port %s...\n", port);
+        printf("[+] Started listening...\n");
     }
 
-    SOCKADDR_IN client_ip;
-    int addrlen = sizeof(client_ip);
-    *socket_id = accept(ListenSocket, (SOCKADDR*)&client_ip, &addrlen);
-
-    if (*socket_id == INVALID_SOCKET) {
+    ClientSocket = accept(ListenSocket, NULL, NULL);
+    if (ClientSocket == INVALID_SOCKET) {
         printf("[-]Accept failed with error: %d\n", WSAGetLastError());
-        closeSocket(ListenSocket);
+        closesocket(ListenSocket);
+        WSACleanup();
         return -1;
     }
     else {
-        char *ip = inet_ntoa(client_ip.sin_addr);
-        printf("[+] Accepted Connection from: %s...\n", ip);
+        printf("[+] Accept successfully...\n");
     }
 
     closesocket(ListenSocket);
+    *socket_id = ClientSocket;
 
     return 0;
 }
 
-int sendData(char *data, unsigned long long socket_id) {
-    if (send(socket_id, data, BUFFER_SIZE, 0 ) == SOCKET_ERROR) {
+int sendData(char *data, unsigned long long Socket) {
+    int iResult = send(Socket, data, 20, 0 );
+    if (iResult == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
-            return -1;
+            closesocket(Socket);
+            WSACleanup();
+            return 1;
         }
     return 0;
 }
 
-int readData(char *data, unsigned long long socket_id) {
-    if (recv(socket_id, data, BUFFER_SIZE, 0) == SOCKET_ERROR) {
-            printf("[-] Receive failed with error: %d\n", WSAGetLastError());
-            return -1;
+int readData(char *data, unsigned long long Socket) {
+    char recvbuf[20];
+    int iResult = recv(Socket, recvbuf, 20, 0);
+    if (iResult == SOCKET_ERROR) {
+            printf("[-] Send failed with error: %d\n", WSAGetLastError());
+            closesocket(Socket);
+            WSACleanup();
+            return 1;
         }
-    printf("%s\n", data);
+    data = recvbuf;
+    printf("%s\n", recvbuf);
     return 0;
 }
 
-int closeSocket(unsigned long long socket_id) {
-    printf("\n[!] Exiting...");
-    fflush(stdout);
-    getchar();
-    closesocket(socket_id);
-    WSACleanup();
-    return 0;
-}
