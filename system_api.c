@@ -2,8 +2,7 @@
 
 int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned long long socket_id), unsigned mouse_cords, unsigned long long socket_id) {
     long x_prev, y_prev;
-    char *data;
-    char buffer[50];
+    char data[BUFFER_SIZE] = {'\0'};
     getMousePos(&x_prev, &y_prev);
 
     while (1) {
@@ -24,7 +23,7 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned 
             func_ptr(data, socket_id);
         }
         else {
-            func_ptr(buffer, socket_id);
+            func_ptr(data, socket_id);
         }
 
         #ifdef __unix__

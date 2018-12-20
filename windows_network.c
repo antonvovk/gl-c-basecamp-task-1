@@ -78,8 +78,7 @@ int createSocketClient(SOCKET *socket_id, char *port, char *address) {
 }
 
 int createSocketServer(SOCKET *socket_id, char *port) {
-    int iResult;
-    SOCKET ListenSocket = INVALID_SOCKET, ClientSocket = INVALID_SOCKET;
+    SOCKET ListenSocket = INVALID_SOCKET;
     struct addrinfo *result = NULL, hints;
 
     initialiseWinsock();
@@ -103,12 +102,10 @@ int createSocketServer(SOCKET *socket_id, char *port) {
         printf("[+] Socket created successfully...\n");
     }
 
-    iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
-    if (iResult == SOCKET_ERROR) {
+    if (bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
         printf("[-] Bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
-        closesocket(ListenSocket);
-        WSACleanup();
+        closeSocket(ListenSocket);
         return -1;
     }
     else {
@@ -117,11 +114,9 @@ int createSocketServer(SOCKET *socket_id, char *port) {
 
     freeaddrinfo(result);
 
-    iResult = listen(ListenSocket, SOMAXCONN);
-    if (iResult == SOCKET_ERROR) {
+    if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR) {
         printf("[-] Listen failed with error: %d\n", WSAGetLastError());
-        closesocket(ListenSocket);
-        WSACleanup();
+        closeSocket(ListenSocket);
         return -1;
     }
     else {
@@ -130,12 +125,11 @@ int createSocketServer(SOCKET *socket_id, char *port) {
 
     SOCKADDR_IN client_ip;
     int addrlen = sizeof(client_ip);
-    ClientSocket = accept(ListenSocket, (SOCKADDR*)&client_ip, &addrlen);
+    *socket_id = accept(ListenSocket, (SOCKADDR*)&client_ip, &addrlen);
 
-    if (ClientSocket == INVALID_SOCKET) {
+    if (*socket_id == INVALID_SOCKET) {
         printf("[-]Accept failed with error: %d\n", WSAGetLastError());
-        closesocket(ListenSocket);
-        WSACleanup();
+        closeSocket(ListenSocket);
         return -1;
     }
     else {
@@ -144,31 +138,29 @@ int createSocketServer(SOCKET *socket_id, char *port) {
     }
 
     closesocket(ListenSocket);
-    *socket_id = ClientSocket;
 
     return 0;
 }
 
-int sendData(char *data, unsigned long long Socket) {
-    int iResult = send(Socket, data, 50, 0 );
-    if (iResult == SOCKET_ERROR) {
+int sendData(char *data, unsigned long long socket_id) {
+    if (send(socket_id, data, BUFFER_SIZE, 0 ) == SOCKET_ERROR) {
             printf("[-] Send failed with error: %d\n", WSAGetLastError());
-            closesocket(Socket);
-            WSACleanup();
-            return 1;
+            return -1;
         }
     return 0;
 }
 
-int readData(char *data, unsigned long long Socket) {
-    int iResult = recv(Socket, data, 50, 0);
-    if (iResult == SOCKET_ERROR) {
-            printf("[-] Send failed with error: %d\n", WSAGetLastError());
-            closesocket(Socket);
-            WSACleanup();
-            return 1;
+int readData(char *data, unsigned long long socket_id) {
+    if (recv(socket_id, data, BUFFER_SIZE, 0) == SOCKET_ERROR) {
+            printf("[-] Receive failed with error: %d\n", WSAGetLastError());
+            return -1;
         }
     printf("%s\n", data);
     return 0;
 }
 
+int closeSocket(unsigned long long socket_id) {
+    closesocket(socket_id);
+    WSACleanup();
+    return 0;
+}
