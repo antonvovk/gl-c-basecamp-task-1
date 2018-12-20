@@ -14,14 +14,14 @@ int createSocket(int *socket_id) {
     return 0;
 }
 
-int createSocketClient(int *socket_id, int port, char *address) {
+int createSocketClient(int *socket_id, char *port, char *address) {
     struct sockaddr_in servaddr;
 
     createSocket(socket_id);
 
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr(address);
-    servaddr.sin_port = htons(port);
+    servaddr.sin_port = htons(atoi(port));
 
     connectToServer(*socket_id, servaddr);
 
@@ -40,13 +40,13 @@ int connectToServer(unsigned long long socket_id, struct sockaddr_in servaddr) {
     return 0;
 }
 
-int createSocketServer(int *socket_id, int port) {
+int createSocketServer(unsigned long long *socket_id, char *port) {
     struct sockaddr_in servaddr, cli;
 
     createSocket(socket_id);
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(port);
+    servaddr.sin_port = htons(atoi(port));
 
     if ((bind(*socket_id, (const struct sockaddr*)&servaddr, sizeof(servaddr))) != 0) {
         printf("[-] Socket bind failed...\n");
@@ -79,15 +79,22 @@ int createSocketServer(int *socket_id, int port) {
 }
 
 int sendData(char *data, unsigned long long socket_id) {
-    write(socket_id, data, sizeof(data) + 10);
+    write(socket_id, data, sizeof(data) + 30);
     return 0;
 }
 
 int readData(char *data, unsigned long long socket_id) {
-    bzero(data, sizeof(data) + 10);
-    read(socket_id, data, sizeof(data) + 10);
+    bzero(data, sizeof(data) + 30);
+    read(socket_id, data, sizeof(data) + 30);
     printf("%s\n", data);
     fflush(stdout);
 
+    return 0;
+}
+
+int closeSocket(unsigned long long socket_id) {
+    printf("\n[!] Exiting...");
+    close(socket_id);
+    getchar();
     return 0;
 }

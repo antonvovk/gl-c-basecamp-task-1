@@ -1,0 +1,23 @@
+CC=cl.exe
+
+LINK=link.exe
+
+.PHONY: app client server clean
+all: app client server
+	
+app:
+	if not exist Build mkdir Build 
+	$(CC) /c windows_network.c -FoBuild/windows_network.obj
+	$(CC) /c client.c -FoBuild/client.obj 
+	$(CC) /c server.c -FoBuild/server.obj
+	$(CC) /c system_api.c -FoBuild/system_api.obj
+
+client:
+	$(LINK) /OUT:Build/client.exe Build/client.obj Build/system_api.obj Build/windows_network.obj
+
+server:
+	$(LINK) /OUT:Build/server.exe Build/server.obj Build/system_api.obj Build/windows_network.obj
+
+clean:
+	cd Build
+	del client.obj server.obj system_api.obj windows_network.obj
