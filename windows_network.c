@@ -160,6 +160,9 @@ int readData(char *data, unsigned long long socket_id) {
 }
 
 int closeSocket(unsigned long long socket_id) {
+    printf("\n[!] Exiting...");
+    fflush(stdout);
+    getchar();
     closesocket(socket_id);
     WSACleanup();
     return 0;

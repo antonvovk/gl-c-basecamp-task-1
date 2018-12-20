@@ -51,6 +51,13 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned 
 
         #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
 
+        if(kbhit()){
+            char c = getchar();
+            if(c == 'q') {
+                return 0;
+            }
+        }
+
         Sleep(1000*seconds);
 
         #endif

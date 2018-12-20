@@ -21,8 +21,6 @@ int main() {
     if (createSocketClient(&socket_id, port, ip_address) == -1) {
         printf("[-] Couldn't connect to server %s on port %s...", ip_address, port);
         closeSocket(socket_id);
-        getchar();
-        getchar();
         return -1;
     }
     printf("[!] Press q if you want to quit...");
