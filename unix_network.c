@@ -79,13 +79,13 @@ int createSocketServer(int *socket_id, int port) {
 }
 
 int sendData(char *data, unsigned long long socket_id) {
-    write(socket_id, data, sizeof(data) + 10);
+    write(socket_id, data, sizeof(data) + 30);
     return 0;
 }
 
 int readData(char *data, unsigned long long socket_id) {
-    bzero(data, sizeof(data) + 10);
-    read(socket_id, data, sizeof(data) + 10);
+    bzero(data, sizeof(data) + 30);
+    read(socket_id, data, sizeof(data) + 30);
     printf("%s\n", data);
     fflush(stdout);
 
