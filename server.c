@@ -17,6 +17,9 @@ int main() {
     scanf("%s", port);
 
     createSocketServer(&socket_id, port);
+    printf("[!] Press q if you want to quit...\n");
+    fflush(stdout);
+
     callFuncPeriodically(2, readData, 0, socket_id);
     closeSocket(socket_id);
     return 0;

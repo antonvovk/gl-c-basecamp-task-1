@@ -18,13 +18,15 @@ int main() {
     printf("Enter server port: ");
     scanf("%s", port);
 
-    if (createSocketClient(&socket_id, port, "127.0.0.1") == -1) {
+    if (createSocketClient(&socket_id, port, ip_address) == -1) {
         printf("[-] Couldn't connect to server %s on port %s...", ip_address, port);
         closeSocket(socket_id);
         getchar();
         getchar();
         return -1;
     }
+    printf("[!] Press q if you want to quit...");
+    fflush(stdout);
 
     callFuncPeriodically(2, sendData, 1, socket_id);
     closeSocket(socket_id);

@@ -4,6 +4,8 @@
 #ifdef __unix__
 
 #include <unistd.h>
+#include <sys/ioctl.h>
+#include <termios.h>
 
 #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
 
