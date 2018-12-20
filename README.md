@@ -1,9 +1,9 @@
 # GL C BaseCamp Task 1
 
-# Compilation on Windows
+Compilation on Windows:
 - Using Developer Command Prompt "nmake -f Makefile.win all"
 
-# Compilation on Ubuntu
+Compilation on Ubuntu:
 - Using terminal "apt-get install xdotool"
 - Using terminal "make all"
 
