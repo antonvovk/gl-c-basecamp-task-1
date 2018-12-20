@@ -29,7 +29,7 @@ int fillAddrInfo(struct addrinfo **result, struct addrinfo *hints, char *address
         return -1;
     }
     else {
-        printf("[+] Getaddrinfo exucuted successfully...\n");
+        printf("[+] Getaddrinfo executed successfully...\n");
     }
 
     return 0;
