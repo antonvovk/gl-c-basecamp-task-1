@@ -2,8 +2,7 @@
 
 int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned long long socket_id), unsigned mouse_cords, unsigned long long socket_id) {
     long x_prev, y_prev;
-    char *data;
-    char buffer[20];
+    char data[BUFFER_SIZE] = {'\0'};
     getMousePos(&x_prev, &y_prev);
 
     while (1) {
@@ -12,10 +11,10 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned 
             getMousePos(&x, &y);
 
             if(x_prev == x && y_prev == y) {
-                data = "[-] Passive";
+                sprintf(data, "[-] Passive(X: %ld, Y: %ld)", x, y);
             }
             else {
-                data = "[+] Active";
+                sprintf(data, "[+] Active(X: %ld, Y: %ld)", x, y);
             }
 
             x_prev = x;
@@ -24,14 +23,40 @@ int callFuncPeriodically(unsigned seconds, int (*func_ptr)(char *data, unsigned 
             func_ptr(data, socket_id);
         }
         else {
-            func_ptr(buffer, socket_id);
+            func_ptr(data, socket_id);
         }
 
         #ifdef __unix__
 
+        struct termios term;
+        tcgetattr(0, &term);
+
+        struct termios term2 = term;
+        term2.c_lflag &= ~ICANON;
+        tcsetattr(0, TCSANOW, &term2);
+
+        int byteswaiting;
+        ioctl(0, FIONREAD, &byteswaiting);
+
+        tcsetattr(0, TCSANOW, &term);
+
+        if (byteswaiting > 0) {
+            char c = getchar();
+            if(c == 'q') {
+                return 0;
+            }
+        }
+
         sleep(seconds);
 
         #elif defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
+
+        if(kbhit()){
+            char c = getchar();
+            if(c == 'q') {
+                return 0;
+            }
+        }
 
         Sleep(1000*seconds);
 
